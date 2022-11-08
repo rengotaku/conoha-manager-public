@@ -1,0 +1,9 @@
+- name: Creates a cron file under /etc/cron.d
+  template:
+    src: "etc/cron.d/{{ item }}.j2"
+    dest: "/etc/cron.d/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+  with_items:
+    - ansible_create_snapshot

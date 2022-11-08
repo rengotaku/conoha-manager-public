@@ -1,0 +1,4 @@
+# For geerlingguy.docker
+docker_users:
+  - "{{ admingroup.user.name }}"
+  - "{{ applicationgroup.user.name }}"

@@ -1,0 +1,20 @@
+---
+
+- hosts: web_proxy
+  become: yes
+  vars_files:
+    - ./group_vars/all.yml
+    - ./group_vars/usergroup.yml
+    - ./group_vars/docker.yml
+    - ./group_vars/web_proxy.yml
+  roles:
+    - root
+    - host
+    - user
+    - docker
+    - git
+    - domain_registor
+    - gsutil
+    - notifier
+    - zabbix-agent
+    - security

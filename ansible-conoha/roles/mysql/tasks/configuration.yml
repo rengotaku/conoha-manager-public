@@ -1,0 +1,20 @@
+- name: Generate MySQL server-id
+  shell: hostname -I | sed -e 's/ \+\([a-z0-9]\+\:\)\+[a-z0-9]\+//' | sed -e 's/ /\n/' | grep -v '^$' | tail -1 | awk -F. '{print $3 * 256 + $4}'
+  register: mysql_server_id
+
+- name: Create /etc/my.cnf
+  template:
+    src: etc/my.cnf.j2
+    dest: /etc/my.cnf
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+
+- name: Copy root .my.cnf file
+  template:
+    src: root-my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600

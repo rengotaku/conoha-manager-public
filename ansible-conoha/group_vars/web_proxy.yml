@@ -1,0 +1,10 @@
+hostname: web_proxy
+private_network:
+  ip_address: 0.0.0.0
+zabbix:
+  agent:
+    server: hogehoe.v41.me
+    server_active: hogehoe.v41.me
+instance_domain:
+  top_domain: hogehoe.v41.me
+  full_domain: hogehoe.v41.me

@@ -1,0 +1,17 @@
+- name: Create /opt/scripts directory
+  file:
+    path: "/opt/scripts"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0700
+
+- name: Put scripts in remote-host
+  copy:
+    src: "opt/scripts/{{ item }}"
+    dest: "/opt/scripts/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: '0700'
+  with_items:
+    - domain_registor.sh

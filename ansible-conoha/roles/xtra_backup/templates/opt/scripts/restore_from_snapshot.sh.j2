@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#
+# /usr/sbin/restore_from_snapshot 2021-05-13-full_backup
+#
+# Bash Boilerplate: https://github.com/xwmx/bash-boilerplate
+#
+# Copyright (c) 2015 William Melody • hi@williammelody.com
+
+# Notes #######################################################################
+#
+# Short form: set -e
+set -o errexit
+
+# Print a helpful message if a pipeline with non-zero exit code causes the
+# script to exit as described above.
+trap 'echo "Aborting due to errexit on line $LINENO. Exit code: $?" >&2' ERR
+
+# Allow the above trap be inherited by all functions in the script.
+#
+# Short form: set -E
+set -o errtrace
+
+# Return value of a pipeline is the value of the last (rightmost) command to
+# exit with a non-zero status, or zero if all commands in the pipeline exit
+# successfully.
+set -o pipefail
+
+# Set $IFS to only newline and tab.
+#
+# http://www.dwheeler.com/essays/filenames-in-shell.html
+IFS=$'\n\t'
+
+###############################################################################
+# Environment
+###############################################################################
+
+# $_ME
+#
+# This program's basename.
+_ME="$(basename "${0}")"
+
+###############################################################################
+# Main
+###############################################################################
+
+# _main()
+#
+# Usage:
+#   _main [<options>] [<arguments>]
+#
+# Description:
+#   Entry point for the program, handling basic option parsing and dispatching.
+_main() {
+  if [ $# -eq 0 ]
+    then
+      echo "Specify snapshot folder name you want to use for restoring like this '2021-05-13-full_backup'"
+      exit 1
+  fi
+
+  # prepare
+  rm -rf /tmp/restore
+  mkdir -p /tmp/restore
+  /usr/bin/systemctl stop mysqld
+
+  # donwload
+  /usr/bin/xbcloud get --storage=google \
+    --google-endpoint='storage.googleapis.com' \
+    --google-access-key='{{ google_cloud_api.access_key }}' \
+    --google-secret-key='{{ google_cloud_api.secret_key }}' \
+    --google-bucket='{{ google_cloud_storage.bucket_name }}' \
+    --parallel=10 \
+    $1 2>download.log | xbstream -x -C /tmp/restore --parallel=8
+
+  # replace data
+  # https://developers.cyberagent.co.jp/blog/archives/28454/
+  xtrabackup --decompress --target-dir=/tmp/restore --remove-original
+  rm -rf /var/lib/mysql
+  mv /tmp/restore /var/lib/mysql
+  chown -R mysql:mysql /var/lib/mysql
+
+  systemctl start mysqld
+}
+
+# Call `_main` after everything has been defined.
+_main "$@"

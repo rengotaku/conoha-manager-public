@@ -1,0 +1,22 @@
+### Sshguard
+# https://wiki.archlinux.org/index.php/Sshguard#firewalld
+- name: Install sshguard
+  yum:
+    name: sshguard
+    state: present
+- name: Create a directory if it does not exist
+  file:
+    path: /etc/sshguard
+    state: directory
+    mode: '0755'
+- name: Configure sshguard and whitelist from templates
+  template:
+    src: "etc/{{ item }}.j2"
+    dest: "/etc/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - sshguard.conf
+    - sshguard.whitelist
+  notify: restart sshguard service

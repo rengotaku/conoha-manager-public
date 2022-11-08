@@ -1,0 +1,29 @@
+- name: Create /opt/scripts directory
+  file:
+    path: "/opt/scripts"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0700
+
+- name: Put scripts in remote-host
+  template:
+    src: "opt/scripts/{{ item }}.j2"
+    dest: "/opt/scripts/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: '0700'
+  with_items:
+    - create_snapshot.sh
+    - restore_from_snapshot.sh
+
+- name: Link scripts to /usr/sbin/
+  file:
+    src: "/opt/scripts/{{ item }}.sh"
+    dest: "/usr/sbin/{{ item }}"
+    state: link
+    owner: "root"
+    group: "root"
+  with_items:
+    - create_snapshot
+    - restore_from_snapshot

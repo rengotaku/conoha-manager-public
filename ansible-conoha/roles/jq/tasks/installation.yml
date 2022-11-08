@@ -1,0 +1,9 @@
+- name: Setup Yum repository
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: present
+
+- name: install jq
+  yum:
+    name: jq
+    state: present

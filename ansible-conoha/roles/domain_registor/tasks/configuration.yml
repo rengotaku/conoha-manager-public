@@ -1,0 +1,10 @@
+- name: Create /home/xxx/.domainrc
+  template:
+    src: .domainrc.j2
+    dest: "{{ item }}/.domainrc"
+    owner: "{{ admingroup.user.name }}"
+    group: "{{ admingroup.group.name }}"
+    mode: 0644
+  with_items:
+    - "/root"
+    - "/home/{{ admingroup.user.name }}"

@@ -1,0 +1,39 @@
+### JournalCtl
+- name: Enable Persistent Logs
+  file:
+    path: /var/log/journal
+    state: directory
+    mode: '0755'
+
+- name: stop firewalld service
+  service:
+    name: firewalld
+    state: stopped
+    enabled: false
+
+- name: Disable Password Authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: "PasswordAuthentication no"
+    state: present
+    backup: yes
+
+- name: Disable Root Login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: "PermitRootLogin no"
+    state: present
+    backup: yes
+  notify: restart sshd service
+  tags:
+  - skip_for_retry
+
+# https://lists.debian.org/debian-user/2009/04/msg01923.html
+- name: Enable Persistent Logs
+  file:
+    path: /var/log/lastlog
+    state: touch
+    group: utmp
+    mode: '0664'

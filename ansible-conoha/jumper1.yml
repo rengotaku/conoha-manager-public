@@ -1,0 +1,12 @@
+---
+
+- hosts: jumper1
+  become: yes
+  vars_files:
+    - ./group_vars/all.yml
+    - ./group_vars/usergroup.yml
+    - ./group_vars/jumper.yml
+  roles:
+    - root
+    - vps
+    - static_ip

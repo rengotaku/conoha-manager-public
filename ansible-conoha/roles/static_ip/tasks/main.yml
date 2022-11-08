@@ -1,0 +1,40 @@
+# https://www.conoha.jp/guide/gen1/g-36.html
+# https://support.conoha.jp/v/setipv4/
+- name: Install NetworkManager-dispatcher-routing-rules
+  yum:
+    name: NetworkManager-dispatcher-routing-rules
+    state: present
+  notify: restart NetworkManager-dispatcher
+
+- name: enabled NetworkManager-dispatcher
+  service:
+    name: NetworkManager-dispatcher
+    enabled: true
+
+- name: Get HWADDR (fa:xx:xx:xx:xx:xx)
+  shell: "echo `ip link ls label eth2 | grep link/ether` | sed -e 's/link\\/ether //g' -e 's/ brd ff:ff:ff:ff:ff:ff//g'"
+  register: hwaddr_rel
+- debug:
+    var: hwaddr_rel
+- name: Setting variable
+  set_fact:
+    hwaddr: "{{hwaddr_rel.stdout}}"
+
+- name: Add network interface, route and rule for vps
+  template:
+    src: "etc/sysconfig/network-scripts/{{ item }}.j2"
+    dest: "/etc/sysconfig/network-scripts/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - ifcfg-eth2
+    - route-eth2
+    - rule-eth2
+  notify: restart network service
+
+- name: Edit route table
+  lineinfile:
+    dest: /etc/iproute2/rt_tables
+    line: "201     static_ip_gate"
+    insertbefore: EOF

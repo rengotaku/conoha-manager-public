@@ -1,0 +1,18 @@
+- name: Setup Yum repository for zabbix-agent
+  yum:
+    name: https://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-release-4.0-1.el7.noarch.rpm
+    state: present
+
+- name: disable all repositories in zabbix repo file
+  lineinfile:
+    path: /etc/yum.repos.d/zabbix.repo
+    regexp: "enabled=1"
+    line: "enabled=0"
+    state: present
+    backup: yes
+
+- name: execute the following command to install Zabbix agent
+  yum:
+    name: zabbix-agent
+    enablerepo: "zabbix"
+    state: present

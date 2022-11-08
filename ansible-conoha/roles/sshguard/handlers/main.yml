@@ -1,0 +1,5 @@
+- name: restart sshguard service
+  service:
+    name: "sshguard"
+    state: restarted
+    enabled: true

@@ -1,0 +1,18 @@
+---
+
+- hosts: database
+  become: yes
+  vars_files:
+    - ./group_vars/all.yml
+    - ./group_vars/usergroup.yml
+    - ./group_vars/xtra_backup.yml
+  roles:
+    - host
+    - root
+    - domain_registor
+    - user
+    - mysql
+    - xtra_backup
+    - notifier
+    - zabbix-agent
+    - security

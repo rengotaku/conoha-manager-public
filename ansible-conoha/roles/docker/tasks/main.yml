@@ -1,0 +1,25 @@
+- include_role:
+    name: geerlingguy.docker
+
+# For application user
+- name: Link scripts to /usr/sbin/
+  file:
+    src: "/usr/local/bin/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    state: link
+  with_items:
+    - docker-compose
+
+- name: Link scripts to /usr/sbin/
+  file:
+    src: "/usr/local/bin/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    state: link
+  with_items:
+    - docker-compose
+
+# https://github.com/moby/moby/issues/16816#issuecomment-179717327
+- name: Allow Docker in iptables
+  iptables:
+    table: filter
+    chain: DOCKER

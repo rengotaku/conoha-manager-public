@@ -1,0 +1,7 @@
+ssh_port: 22
+slack:
+  cron_webhook: https://hooks.slack.com/services/hogehoe
+conoha:
+  username: hogehoe
+  password: hogehoe
+  tenantid: hogehoe

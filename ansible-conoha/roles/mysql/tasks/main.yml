@@ -1,0 +1,13 @@
+- include: installation.yml
+
+# https://github.com/dev-sec/ansible-mysql-hardening
+- include: mysql_secure_installation.yml
+
+- include: configuration.yml
+
+- include: zabbix_user.yml
+
+- name: restart mysqld service
+  service:
+    name: "mysqld"
+    state: restarted

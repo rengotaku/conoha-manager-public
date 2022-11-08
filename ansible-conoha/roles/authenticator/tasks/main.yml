@@ -1,0 +1,75 @@
+### Two-Factor Authentication
+- name: Install google-authenticator
+  yum:
+    name: google-authenticator
+    state: present
+- name: Install ntp
+  yum:
+    name: ntp
+    state: present
+  notify: restart ntp service
+- name: Update sshd config to enable challenge responses(1)
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: ^ChallengeResponseAuthentication
+    line: "ChallengeResponseAuthentication yes"
+    state: present
+- name: Update sshd config to enable challenge responses(2)
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    insertafter: "^ChallengeResponseAuthentication yes"
+    line: "AuthenticationMethods publickey,keyboard-interactive"
+    state: present
+  notify: restart sshd service
+- name: Add Google authenticator to PAM
+  lineinfile:
+    dest: /etc/pam.d/sshd
+    line: "auth [success=done new_authtok_reqd=done default=die] pam_google_authenticator.so nullok"
+    insertbefore: BOF
+    state: present
+- name: Add Google authenticator to PAM
+  lineinfile:
+    dest: /etc/pam.d/sshd
+    regexp: "auth       substack     password-auth"
+    line: "#auth       substack     password-auth"
+    insertbefore: BOF
+    state: present
+- name: Generate a timed-based, no reuse, rate-limited (3 logins per 30 seconds) with one concurrently valid code for default user
+  command: /usr/bin/google-authenticator -t -f -d --label="{{ admingroup.user.name }}@{{ ansible_hostname }}" --qr-mode=ANSI -r 3 -R 30 -w 1 --secret=/home/{{ admingroup.user.name }}/.google_authenticator
+  register: google_authenticator
+- debug:
+    var: google_authenticator.stdout_lines
+- name: ~/.ssh for users exist
+  file:
+    path: "/home/{{ admingroup.user.name }}/.google_authenticator"
+    state: file
+    owner: "{{admingroup.user.name}}"
+    group: "{{admingroup.group.name}}"
+    mode: 0600
+- name: Retrieve generated keys from server
+  fetch:
+    src: /home/{{ admingroup.user.name }}/.google_authenticator
+    dest: /tmp/sovereign-google-auth-files
+- debug:
+    msg: "Your Google Authentication keys are in /tmp/sovereign-google-auth-files. Press any key to continue..."
+
+### Monit
+- name: Install monit
+  yum:
+    name: monit
+    state: present
+- name: Configure monit from templates
+  template:
+    src: etc/monit.d/ssh-logins.j2
+    dest: /etc/monit.d/ssh-logins
+    owner: root
+    group: root
+    mode: '0644'
+- name: Script notificator of slack from templates
+  template:
+    src: "usr/bin/slack.sh.j2"
+    dest: "/usr/bin/slack.sh"
+    owner: root
+    group: root
+    mode: '0700'
+  notify: restart monit service

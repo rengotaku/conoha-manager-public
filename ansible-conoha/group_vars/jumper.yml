@@ -1,0 +1,16 @@
+hostname: jumper
+private_network:
+  ip_address: 0.0.0.0
+static_ip:
+  ip_address: 0.0.0.0
+  netmask: 0.0.0.0
+  default_gateway: 0.0.0.0
+slack:
+  webhook: https://hooks.slack.com/services/hogehoe
+zabbix:
+  agent:
+    server: hogehoe.v41.me
+    server_active: hogehoe.v41.me
+instance_domain:
+  top_domain: hogehoe.v41.me
+  full_domain: hogehoe.v41.me

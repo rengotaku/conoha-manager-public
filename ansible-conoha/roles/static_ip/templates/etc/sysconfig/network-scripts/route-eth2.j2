@@ -1,0 +1,3 @@
+default via {{ static_ip.default_gateway }} table static_ip_gate
+# https://serverfault.com/questions/849253/centos-configure-outbound-ip-address
+default via {{ ansible_eth0.ipv4.address }} dev eth0 src {{ static_ip.ip_address }}

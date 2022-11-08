@@ -1,0 +1,10 @@
+- name: restart network service
+  shell: "nohup bash -c 'echo sleep_15_sec && sleep 15 && systemctl restart network && echo netwrok_restart_done' >> /tmp/ansible.log 2>&1 &"
+  async: 45
+  poll: 0
+
+- name: restart NetworkManager-dispatcher
+  service:
+    name: NetworkManager
+    state: restarted
+    enabled: true

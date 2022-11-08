@@ -1,0 +1,20 @@
+---
+
+- hosts: jumper2
+  become: yes
+  vars_files:
+    - ./group_vars/all.yml
+    - ./group_vars/usergroup.yml
+    - ./group_vars/docker.yml
+    - ./group_vars/jumper.yml
+  roles:
+    - host
+    - user
+    - docker
+    - git
+    - domain_registor
+    - authenticator
+    - gsutil
+    - notifier
+    - zabbix-agent
+    - security

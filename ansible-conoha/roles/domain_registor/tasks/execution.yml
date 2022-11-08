@@ -1,0 +1,2 @@
+- name: Renamming DNS
+  command: /opt/scripts/domain_registor.sh --debug >> /tmp/domain_registed.log

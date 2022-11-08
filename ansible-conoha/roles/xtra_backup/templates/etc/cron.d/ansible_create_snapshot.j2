@@ -1,0 +1,3 @@
+#Ansible: create snapshot
+MAILTO="taku.kisi.1989+cron@gmail.com"
+0 1 * * * root sh -c '/usr/sbin/create_snapshot && notifier_to_slack "【$(hostname)】[backup_snaphsot_mysql] ok"' > /dev/null

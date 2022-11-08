@@ -1,0 +1,19 @@
+---
+
+- hosts: zabbix_server
+  become: yes
+  vars_files:
+    - ./group_vars/all.yml
+    - ./group_vars/usergroup.yml
+    - ./group_vars/docker.yml
+    - ./group_vars/zabbix_server.yml
+  roles:
+    - root
+    - host
+    - user
+    - vps
+    - domain_registor
+    - docker
+    - git
+    - zabbix-agent
+    - security

@@ -1,0 +1,38 @@
+- name: Set new root password from default temporary password
+  shell: "mysql -e \"ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ passwd_mysql_root }}';\" --connect-expired-password -uroot -p'{{ mysql_root_password_temp.stdout }}' && touch /root/.my.password.changed"
+  args:
+    creates: /root/.my.password.changed
+
+# https://stackoverflow.com/a/51575940
+- name: Uninstall MySQL validate password plugin
+  # shell: "mysql -e \"UNINSTALL PLUGIN validate_password;\" -uroot -p'{{ passwd_mysql_root }}'"
+  shell: "mysql -e \"UNINSTALL COMPONENT 'file://component_validate_password';\" -uroot -p'{{ passwd_mysql_root }}'"
+  ignore_errors: yes
+
+- name: Ensure root can login into MySQL localhost
+  shell: "mysql -e \"CREATE USER IF NOT EXISTS 'root'@'{{ item }}'; ALTER USER 'root'@'{{ item }}' IDENTIFIED WITH mysql_native_password BY '{{ passwd_mysql_root }}';\" -uroot -p'{{ passwd_mysql_root }}'"
+  with_items:
+    - ::1
+    - 127.0.0.1
+
+- name: test database is absent
+  shell: "mysql -e \"DROP DATABASE IF EXISTS {{ item }};\" -uroot -p'{{ passwd_mysql_root }}'"
+  with_items:
+    - test
+
+- name: anonymous users are absent
+  shell: "mysql -e \"DELETE FROM mysql.user WHERE User='';\" -uroot -p'{{ passwd_mysql_root }}'"
+
+- name: anonymous users are absent
+  shell: "mysql -e \"DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');\" -uroot -p'{{ passwd_mysql_root }}'"
+
+# http://howtolamp.com/lamp/mysql/5.6/securing#secure-users
+- name: Disabling MySQL Server history file
+  file:
+    path: $HOME/.mysql_history
+    state: absent
+- file:
+    src: "/dev/null"
+    dest: "$HOME/.mysql_history"
+    state: link
+    force: yes

@@ -1,0 +1,26 @@
+- name: Get IPv4
+  shell: "echo `ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\\.){3}[0-9]*' | grep -Eo '([0-9]*\\.){3}[0-9]*'`"
+  register: ipv4_eth0
+- debug:
+    var: ipv4_eth0
+
+- name: Set a hostname
+  hostname:
+    name: "{{ hostname }}-{{ ipv4_eth0.stdout | replace('.','x') }}"
+
+- name: Link /usr/share/zoneinfo/Asia/Tokyo to /etc/localtime
+  file:
+    src: /usr/share/zoneinfo/Asia/Tokyo
+    dest: /etc/localtime
+    state: link
+    force: yes
+
+- name: Custom motd
+  template:
+    src: "etc/profile.d/{{ item }}.j2"
+    dest: "/etc/profile.d//{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - motd.sh

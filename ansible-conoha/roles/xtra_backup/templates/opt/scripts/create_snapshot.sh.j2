@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+#
+# Set cron
+#
+# Bash Boilerplate: https://github.com/xwmx/bash-boilerplate
+#
+# Copyright (c) 2015 William Melody • hi@williammelody.com
+
+# Notes #######################################################################
+#
+# Short form: set -e
+set -o errexit
+
+# Print a helpful message if a pipeline with non-zero exit code causes the
+# script to exit as described above.
+trap 'echo "Aborting due to errexit on line $LINENO. Exit code: $?" >&2' ERR
+
+# Allow the above trap be inherited by all functions in the script.
+#
+# Short form: set -E
+set -o errtrace
+
+# Return value of a pipeline is the value of the last (rightmost) command to
+# exit with a non-zero status, or zero if all commands in the pipeline exit
+# successfully.
+set -o pipefail
+
+# Set $IFS to only newline and tab.
+#
+# http://www.dwheeler.com/essays/filenames-in-shell.html
+IFS=$'\n\t'
+
+###############################################################################
+# Environment
+###############################################################################
+
+# $_ME
+#
+# This program's basename.
+_ME="$(basename "${0}")"
+
+###############################################################################
+# Main
+###############################################################################
+
+# _main()
+#
+# Usage:
+#   _main [<options>] [<arguments>]
+#
+# Description:
+#   Entry point for the program, handling basic option parsing and dispatching.
+_main() {
+  set +o errexit
+  # https://jira.percona.com/browse/PXB-2279
+  /usr/bin/xtrabackup --backup --stream=xbstream --extra-lsndir=/tmp --target-dir=/tmp --user={{ percona_xtrabackup_user.name }} --password='{{ percona_xtrabackup_user.password }}' --parallel=3 --compress --compress-threads=3 | \
+  /usr/bin/xbcloud put --storage=google \
+    --google-endpoint='storage.googleapis.com' \
+    --google-access-key='{{ google_cloud_api.access_key }}' \
+    --google-secret-key='{{ google_cloud_api.secret_key }}' \
+    --google-bucket='{{ google_cloud_storage.bucket_name }}' \
+    --parallel=10 \
+    $(date -I)-full_backup > 2>&1 /tmp/backup.log
+  set -o errexit
+
+  cat /tmp/backup.log | grep 'Upload failed: backup is incomplete.'
+}
+
+# Call `_main` after everything has been defined.
+_main "$@"

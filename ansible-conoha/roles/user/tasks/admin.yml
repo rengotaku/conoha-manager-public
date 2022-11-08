@@ -1,0 +1,60 @@
+- name: check group existance
+  shell: "getent group {{ admingroup.group.name }}"
+  register: group_exitence
+  failed_when: group_exitence.rc not in [ 0, 2 ]
+
+- name: create admin group
+  group:
+    name: "{{ admingroup.group.name }}"
+    gid: "{{ admingroup.group.gid }}"
+  when: group_exitence.rc == 0
+
+- name: add admin user
+  user:
+    name: "{{ admingroup.user.name }}"
+    uid: "{{ admingroup.user.uid }}"
+    password: "{{ admingroup.user.password }}"
+
+- name: add users that join to group (wheel and admingroup)
+  user:
+    name: "{{ admingroup.user.name }}"
+    uid: "{{ admingroup.user.uid }}"
+    groups: "{{ admingroup.group.name }},wheel"
+
+- name: check user existance in groups
+  shell: 'groups app | echo "$(cut -d: -f 2) "'
+  register: user_exitence_in_group
+
+- name: add users that join to group
+  user:
+    name: "{{ admingroup.user.name }}"
+    groups: "{{ item }}"
+    append: true
+  when: item not in user_exitence_in_group.stdout_lines
+  with_items:
+    - " {{ admingroup.group.name }} "
+    - " {{ applicationgroup.group.name }} "
+
+- name: ~/.ssh for users exist
+  file:
+    path: "/home/{{admingroup.user.name}}/.ssh"
+    state: directory
+    owner: "{{ admingroup.user.name }}"
+    group: "{{ admingroup.group.name }}"
+    mode: 0700
+
+- name: visudo
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^# %wheel  ALL=(ALL) NOPASSWD: ALL'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    backup: yes
+
+- name: copy authorized_keys from root to user
+  copy:
+    src: /root/.ssh/authorized_keys
+    dest: /home/{{ admingroup.user.name }}/.ssh/authorized_keys
+    owner: "{{ admingroup.user.name }}"
+    group: "{{ admingroup.group.name }}"
+    remote_src: yes

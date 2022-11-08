@@ -1,0 +1,10 @@
+- name: Create /home/xxx/.slackrc
+  template:
+    src: .slackrc.j2
+    dest: "{{ item }}/.slackrc"
+    owner: "{{ admingroup.user.name }}"
+    group: "{{ admingroup.group.name }}"
+    mode: 0644
+  with_items:
+    - "/root"
+    - "/home/{{ admingroup.user.name }}"

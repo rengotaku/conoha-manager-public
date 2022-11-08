@@ -1,0 +1,8 @@
+percona_xtrabackup_info:
+  donwload_url: 'https://downloads.percona.com/downloads/Percona-XtraBackup-LATEST/Percona-XtraBackup-{{ percona_xtrabackup_version }}/binary/redhat/7/x86_64/percona-xtrabackup-80-{{ percona_xtrabackup_version }}-1.el7.x86_64.rpm'
+
+percona_xtrabackup_user:
+  name: hogehoe
+  password: hogehoe
+
+percona_xtrabackup_version: 8.0.14

@@ -1,0 +1,10 @@
+- name: Update Root user's Password
+  user: 
+    name: root
+    update_password: always 
+    password: "{{ root.password }}"
+
+- name: Locking the Root Account
+  user:
+    name: root
+    password_lock: yes

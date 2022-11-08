@@ -1,0 +1,32 @@
+### MySQL
+# https://www.mysqltutorial.org/install-mysql-centos/
+- name: Setup Yum repository
+  yum:
+    name: https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
+    state: present
+
+- name: disable all repositories in mysql repo file
+  lineinfile:
+    path: /etc/yum.repos.d/mysql-community.repo
+    regexp: "enabled=1"
+    line: "enabled=0"
+    state: present
+    backup: yes
+
+- name: execute the following command to install MySQL 8
+  yum:
+    name: mysql-community-server
+    enablerepo: "mysql80-community"
+    state: present
+
+- name: start mysqld service
+  service:
+    name: mysqld
+    state: started
+    enabled: true
+
+- name: Show the default password for root user
+  shell: "grep 'A temporary password' /var/log/mysqld.log | sed -E 's/.+root@localhost: //g'"
+  register: mysql_root_password_temp
+- debug:
+    var: mysql_root_password_temp.stdout

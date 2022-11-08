@@ -1,0 +1,12 @@
+- include: installation.yml
+
+- include: configuration.yml
+
+- include: mysql_configuration.yml
+  when: "zabbix.mysql_configuration is defined"
+
+- name: restart zabbix-agent service
+  service:
+    name: "zabbix-agent"
+    state: restarted
+    enabled: true

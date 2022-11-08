@@ -1,0 +1,25 @@
+### Git
+- name: Install git
+  yum:
+    name: git
+    state: present
+
+- name: Create ssh-key for git
+  template:
+    src: home/admin/.ssh/{{ item }}
+    dest: /home/admin/.ssh/{{ item }}
+    owner: "{{ admingroup.user.name }}"
+    group: "{{ admingroup.group.name }}"
+    mode: 0600
+  with_items:
+    - id_git_ed25519
+
+- name: Create ssh config
+  template:
+    src: home/admin/.ssh/{{ item }}
+    dest: /home/admin/.ssh/{{ item }}
+    owner: "{{ admingroup.user.name }}"
+    group: "{{ admingroup.group.name }}"
+    mode: 0600
+  with_items:
+    - config

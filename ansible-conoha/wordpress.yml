@@ -1,0 +1,22 @@
+---
+
+- hosts: wordpress
+  become: yes
+  vars_files:
+    - ./group_vars/all.yml
+    - ./group_vars/usergroup.yml
+    - ./group_vars/docker.yml
+    - ./group_vars/wordpress.yml
+  roles:
+    - root
+    - host
+    - user
+    - vps
+    - domain_registor
+    - docker
+    - git
+    - gsutil
+    - notifier
+    - zabbix-agent
+    - zabbix-agent2
+    - security

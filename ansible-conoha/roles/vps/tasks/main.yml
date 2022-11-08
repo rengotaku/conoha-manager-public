@@ -1,0 +1,11 @@
+# https://support.conoha.jp/v/privatenetwork/
+- name: Add network interface for vps
+  template:
+    src: "etc/sysconfig/network-scripts/{{ item }}.j2"
+    dest: "/etc/sysconfig/network-scripts/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  with_items:
+    - ifcfg-eth1
+  notify: restart network service

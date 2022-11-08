@@ -1,0 +1,5 @@
+- name: restart network service
+  service:
+    name: network
+    state: restarted
+    enabled: true

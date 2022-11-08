@@ -1,0 +1,7 @@
+- include: installation.yml
+
+- include: users.yml
+
+- include: scripts.yml
+
+- include: crons.yml

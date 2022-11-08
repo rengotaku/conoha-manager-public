@@ -1,0 +1,4 @@
+user_name = "xxxx"
+password = "xxxx"
+tenant_name = "xxxx"
+public_key = "ssh-rsa xxxx"

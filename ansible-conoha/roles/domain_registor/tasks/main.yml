@@ -1,0 +1,8 @@
+- include_role:
+    name: jq
+
+- include: scripts.yml
+
+- include: configuration.yml
+
+- include: execution.yml

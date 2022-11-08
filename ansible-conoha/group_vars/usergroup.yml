@@ -1,0 +1,20 @@
+root:
+  password: hogehoe
+
+admingroup:
+  user:
+    name: admin
+    uid: 4520
+    gid: 4520
+    password: hogehoe
+  group:
+    name: admin
+    gid: 4520
+applicationgroup:
+  user:
+    name: app
+    uid: 4521
+    gid: 4521
+  group:
+    name: app
+    gid: 4521

@@ -1,0 +1,36 @@
+# https://github.com/continuent/continuent-ansible/blob/master/roles/prerequsites/tasks/packages/redhat.yml
+# - name: Install EPEL repository
+#   yum:
+#     name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+#     state: present
+
+# - name: Upgrade all packages
+#   yum:
+#     name: "*"
+#     state: latest
+
+# - name: Install required packages
+#   yum:
+#     name: "{{ packages }}"
+#     state: present
+#   vars:
+#     packages:
+#       - java-1.8.0-openjdk
+#       - perl
+#       - rsync
+#       - ruby
+#       - rubygem-io-console
+#       - rubygem-net-ssh
+#       - rubygem-net-scp
+#       - tar
+#       - zip
+
+- name: Install Percona XtraBackup
+  yum:
+    name: "{{ percona_xtrabackup_info.donwload_url }}"
+    state: present
+
+- name: Install qpress repository
+  yum:
+    name: "https://repo.percona.com/yum/release/7/RPMS/x86_64/qpress-11-1.el7.x86_64.rpm"
+    state: present

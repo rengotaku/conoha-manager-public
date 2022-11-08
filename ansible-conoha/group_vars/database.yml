@@ -1,0 +1,21 @@
+hostname: database
+private_network:
+  ip_address: 0.0.0.0
+passwd_mysql_root: hogehoe
+mysql_user:
+  zabbix_monitor:
+    user: hogehoe
+    password: hogehoe
+google_cloud_storage:
+  bucket_name: hogehoe
+google_cloud_api:
+  access_key: hogehoe
+  secret_key: hogehoe+IR
+zabbix:
+  agent:
+    server: hogehoe.v41.me
+    server_active: hogehoe.v41.me
+  mysql_configuration: true
+instance_domain:
+  top_domain: hogehoe.v41.me
+  full_domain: hogehoe.v41.me
